@@ -3,6 +3,27 @@ import tensorflow as tf
 
 
 def DAF(trX,layers,batch_range,activation):
+
+      """
+
+      Parameters
+      ----------
+
+      trX: input data
+
+      batch_range : size of minibatch
+
+      layers = layers of network (first layer must have neurons as number of 
+                                features of input data and final layers must have number 
+                                of features as final dimension)
+
+      activation: activation function   ("sigmoid" or "tanh")
+
+      Returns
+      -------
+
+      input dataset in required dimension
+      """
     cur_input=trX
     learning_rate=0.001
     n_layer=len(layers)
