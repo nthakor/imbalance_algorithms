@@ -11,7 +11,7 @@ from sklearn.metrics import roc_auc_score
 
 from algorithms.utils import _read_split,_class_split,_one_hot
 from algorithms.daego import DAEGO
-from algorithms.daf import DAF
+from algorithms.encoder import autoencoder,_encoder_transform
 
 trX, teX, trY, teY = _read_split("dataset/segment.csv",read=1)
 
@@ -22,8 +22,8 @@ trX_scaled=scaler.fit_transform(trX)
 X0,X1=_class_split(trX_scaled,trY)
 label_daf=[X0.shape[1],30,60]
 
-Z0_=DAF(X0,label_daf,150,"sigmoid")
-Z1_=DAF(X1,label_daf,10,"sigmoid")
+Z0_=_encoder_transform(X0,label_daf,150)
+Z1_=_encoder_transform(X1,label_daf,10)
 
 label_daego=[Z1_.shape[1],80,100]
 syn_Z=DAEGO(Z1_,label_daego,100,10)
@@ -31,8 +31,8 @@ syn_Z=DAEGO(Z1_,label_daego,100,10)
 Z1_1=np.hstack((Z1_,syn_Z))
 
 label_daf.reverse()
-X0_=DAF(Z0_,label_daf,150,"sigmoid")
-X1_=DAF(Z1_1,label_daf,10,"sigmoid")
+X0_=_encoder_transform(Z0_,label_daf,150)
+X1_=_encoder_transform(Z1_1,label_daf,10)
 
 
 X1=np.column_stack((X1_,np.ones(X1_.shape[0])))
@@ -54,7 +54,7 @@ label_daf_test=label_daf_test+label_daf
 
 print label_daf_test,"test"
 print label_daf,"label"
-teX=DAF(teX_scaled,label_daf_test,10,"sigmoid")
+teX=_encoder_transform(teX_scaled,label_daf_test,10)
 
 
 clf = tree.DecisionTreeRegressor()

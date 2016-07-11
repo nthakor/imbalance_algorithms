@@ -5,26 +5,24 @@ import tensorflow as tf
 
 
 def DAEGO(X_s,H,P,batch_range):
+	"""
+Parameters
+----------
 
-  """
+X_s: small class features
 
-  Parameters
-  ----------
+H : layers (first layers shoud have same neurons as number of features)
 
-  X_s: small class features
+P : percent oversampling
 
-  H : layers (first layers shoud have same neurons as number of features)
-
-  P : percent oversampling
-
-  batch_range : size of minibatch
+batch_range : size of minibatch
 
 
-  Returns
-  -------
+Returns
+-------
 
-  syn_Z: synthetic sample with same number of features as smaller class
-  """
+syn_Z: synthetic sample with same number of features as smaller class
+"""
 
 	n_samples=int(X_s.shape[0]*P/100)
 	print "generating %d samples" %(n_sample)

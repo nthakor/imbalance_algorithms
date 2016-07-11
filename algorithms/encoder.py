@@ -68,3 +68,39 @@ def autoencoder(dimensions):
     return {'x': x, 'z': z, 'y': y,
             'corrupt_prob': corrupt_prob,
             'cost': cost}
+
+
+
+def _encoder_transform(X_s,layers,batch_range):
+    """
+    Parameters:
+    ----------
+
+    X_s: input data
+    layers: neuron layers (input shape + hidden layers)
+    batch_range: size of minibatch
+
+    Returs:
+
+    Input data with fetures as most latent representation
+
+    """
+    ae= autoencoder(dimensions=layers)
+    learning_rate = 0.001
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(ae['cost'])
+    sess = tf.Session()
+    sess.run(tf.initialize_all_variables())
+    n_epoch=100
+    for epoch_i in range(n_epoch):
+        for start, end in zip(range(0, len(X_s), batch_range),range(batch_range, len(X_s), batch_range)):
+            input_ = X_s[start:end]
+            sess.run(optimizer, feed_dict={ae['x']: input_, ae['corrupt_prob']: [1.0]})
+        print(epoch_i, sess.run(ae['cost'], feed_dict={ae['x']: X_s, ae['corrupt_prob']: [1.0]}))  
+    Z_0 = sess.run(ae['z'], feed_dict={ae['x']: X_s, ae['corrupt_prob']: [0.0]})
+    sess.close()
+    return Z_0
+
+
+
+
+

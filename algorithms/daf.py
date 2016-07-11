@@ -1,29 +1,29 @@
 import numpy as np
 import tensorflow as tf
-
+import math
 
 def DAF(trX,layers,batch_range,activation):
 
-      """
+    """
 
-      Parameters
-      ----------
+    Parameters
+    ----------
 
-      trX: input data
+    trX: input data
 
-      batch_range : size of minibatch
+    batch_range : size of minibatch
 
-      layers = layers of network (first layer must have neurons as number of 
-                                features of input data and final layers must have number 
-                                of features as final dimension)
+    layers = layers of network (first layer must have neurons as number of 
+                              features of input data and final layers must have number 
+                              of features as final dimension)
 
-      activation: activation function   ("sigmoid" or "tanh")
+    activation: activation function   ("sigmoid" or "tanh")
 
-      Returns
-      -------
+    Returns
+    -------
 
-      input dataset in required dimension
-      """
+    input dataset in required dimension
+    """
     cur_input=trX
     learning_rate=0.001
     n_layer=len(layers)
@@ -40,13 +40,13 @@ def DAF(trX,layers,batch_range,activation):
         w_d=tf.transpose(w_e)
         b_d = tf.Variable(tf.zeros([node]))
         if(activation=="sigmoid"):
-	        z=tf.nn.sigmoid(tf.matmul(x, w_e) + b_e)
-	        y=tf.nn.sigmoid(tf.matmul(z, w_d) + b_d)
-	    else if(activation=="tanh"):
-	        z=tf.nn.tanh(tf.matmul(x, w_e) + b_e)
-	        y=tf.nn.tanh(tf.matmul(z, w_d) + b_d)
-	    else:
-	    	print "Wrong Activation"
+          z=tf.nn.sigmoid(tf.matmul(x, w_e) + b_e)
+          y=tf.nn.sigmoid(tf.matmul(z, w_d) + b_d)
+        elif(activation=="tanh"):
+          z=tf.nn.tanh(tf.matmul(x, w_e) + b_e)
+          y=tf.nn.tanh(tf.matmul(z, w_d) + b_d)
+        else:
+          print "Wrong Activation"
         cost = tf.sqrt(tf.reduce_mean(tf.square(y - x)))
         l2_loss = tf.add_n([tf.nn.l2_loss(w_e),tf.nn.l2_loss(w_d)])
         loss = cost + 0.001*l2_loss
