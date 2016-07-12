@@ -24,7 +24,7 @@ def corrupt(x):
 def _one_hot(label):
   return pd.get_dummies(label)
 
-def _read_split(file,read=0):
+def _read_split(file,read=0,oneHot=0):
   """
 
   Parameters
@@ -50,7 +50,8 @@ def _read_split(file,read=0):
 
   Xy=df.as_matrix().astype(np.float32)
   y=Xy[:,Xy.shape[1]-1]
-  y=_one_hot(y)
+  if(oneHot):
+    y=_one_hot(y)
   X=np.delete(Xy,Xy.shape[1]-1,axis=1)
   return train_test_split(X,y, test_size=0.3, random_state=42)
 
@@ -62,8 +63,11 @@ def _reverse_one_hot(y):
   label=np.arange(n_class)
   return np.dot(y,label)
 
-def _class_split(trX,trY):
-  Y=_reverse_one_hot(trY)
+def _class_split(trX,trY,oneHot=0):
+  if(oneHot):
+    Y=_reverse_one_hot(trY)
+  else:
+    Y=trY
   X=np.column_stack((trX,Y))
   class_0=X[np.where(X[:,X.shape[1]-1]==0)[0]]
   class_1=X[np.where(X[:,X.shape[1]-1]==1)[0]]

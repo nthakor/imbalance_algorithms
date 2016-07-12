@@ -20,7 +20,7 @@ scaler=MinMaxScaler(feature_range=(0, 1))
 trX_scaled=scaler.fit_transform(trX)
 
 X0,X1=_class_split(trX_scaled,trY)
-label_daf=[X0.shape[1],30,60]
+label_daf=[X0.shape[1],50,100]
 
 Z0_=_encoder_transform(X0,label_daf,150)
 Z1_=_encoder_transform(X1,label_daf,10)

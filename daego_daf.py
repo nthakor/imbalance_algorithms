@@ -12,15 +12,15 @@ from sklearn.metrics import roc_auc_score
 from algorithms.utils import _read_split,_class_split,_one_hot
 from algorithms.daego import DAEGO
 from algorithms.daf import DAF
-
-trX, teX, trY, teY = _read_split("dataset/segment.csv",read=1)
+from algorithms.TFMLP import MLPR
+trX, teX, trY, teY = _read_split("dataset/segment.csv",read=1,oneHot=1)
 
 #preprocessing 
 scaler=MinMaxScaler(feature_range=(0, 1))
 trX_scaled=scaler.fit_transform(trX)
 
 X0,X1=_class_split(trX_scaled,trY)
-label_daf=[X0.shape[1],30,60]
+label_daf=[X0.shape[1],15,10]
 
 Z0_=DAF(X0,label_daf,150,"sigmoid")
 Z1_=DAF(X1,label_daf,10,"sigmoid")
@@ -58,9 +58,20 @@ print label_daf,"label"
 teX=DAF(teX_scaled,label_daf_test,10,"sigmoid")
 
 
-clf = tree.DecisionTreeRegressor()
-clf = clf.fit(trX, trY)
-pred=clf.predict(teX)
-print f1_score(teY,pred),"F1-score"
+layers=[trX.shape[1],50,trY.shape[1]]
+print layers
+mlpr=MLPR(layers,maxItr = 1000, tol = 0.40, reg = 0.001, verbose = True)
+
+mlpr.fit(trX, trY)
+pred = mlpr.predict(teX)
+
+print pred.shape,"pred"
+print pred
+print teY
+print teY.shape,"teY"
+# clf = tree.DecisionTreeRegressor()
+# clf = clf.fit(trX, trY)
+# pred=clf.predict(teX)
+# print f1_score(teY,pred),"F1-score"
 print precision_score(teY,pred),"Precision Score"
 print roc_auc_score(teY,pred), "ROC_AUC"
