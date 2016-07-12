@@ -95,7 +95,7 @@ def _encoder_transform(X_s,layers,batch_range):
         for start, end in zip(range(0, len(X_s), batch_range),range(batch_range, len(X_s), batch_range)):
             input_ = X_s[start:end]
             sess.run(optimizer, feed_dict={ae['x']: input_, ae['corrupt_prob']: [1.0]})
-        print(epoch_i, sess.run(ae['cost'], feed_dict={ae['x']: X_s, ae['corrupt_prob']: [1.0]}))  
+        # print(epoch_i, sess.run(ae['cost'], feed_dict={ae['x']: X_s, ae['corrupt_prob']: [1.0]}))  
     Z_0 = sess.run(ae['z'], feed_dict={ae['x']: X_s, ae['corrupt_prob']: [0.0]})
     sess.close()
     return Z_0

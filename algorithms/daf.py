@@ -59,6 +59,6 @@ def DAF(trX,layers,batch_range,activation):
                                       range(batch_range, len(cur_input), batch_range)):
                     input_ = cur_input[start:end]
                     sess.run(train_op,feed_dict={x:input_})
-                print (epoch_i,sess.run(cost,feed_dict={x:cur_input}))
+                # print (epoch_i,sess.run(cost,feed_dict={x:cur_input}))
             cur_input=sess.run(z,feed_dict={x:cur_input})
     return cur_input
