@@ -75,6 +75,24 @@ def _class_split(trX,trY,oneHot=0):
   class_1=np.delete(class_1,-1,axis=1)
   return class_0,class_1
 
+def _f_count(Y):
+  if (len(Y.shape))==2:
+    Y=_reverse_one_hot(Y)
+  c = np.bincount(Y.astype(np.int32))
+  ii = np.nonzero(c)[0]
+  return zip(ii,c[ii])
 
-
+def process_cm(confusion_mat, i=1, to_print=True):
+    # i means which class to choose to do one-vs-the-rest calculation
+    # rows are actual obs whereas columns are predictions
+    TP = confusion_mat[i,i]  # correctly labeled as i
+    FP = confusion_mat[:,i].sum() - TP  # incorrectly labeled as i
+    FN = confusion_mat[i,:].sum() - TP  # incorrectly labeled as non-i
+    TN = confusion_mat.sum().sum() - TP - FP - FN
+    if to_print:
+        print('TP: {}'.format(TP))
+        print('FP: {}'.format(FP))
+        print('FN: {}'.format(FN))
+        print('TN: {}'.format(TN))
+    return TP, FP, FN, TN
 

@@ -14,7 +14,7 @@ from algorithms.daf import DAF
 trX, teX, trY, teY = _read_split("dataset/segment.csv",read=1)
 
 
-layer=[trX.shape[1],50,80]
+layer=[trX.shape[1],30,40]
 
 def _daf_module(X,Y,layer,batch_range):
 	X1=DAF(X,layer,batch_range,"sigmoid")
@@ -27,21 +27,10 @@ def _daf_module(X,Y,layer,batch_range):
 	X=np.delete(Xy,Xy.shape[1]-1,axis=1)
 	return X,y
 
-print layer,"layer"
-
-print "before DAF"
-print trX.shape
-print trY.shape
-print teX.shape
-print teY.shape
 
 trX,trY=_daf_module(trX,trY,layer,10)
 teX,teY=_daf_module(teX,teY,layer,10)
-print "after DAF"
-print trX.shape
-print trY.shape
-print teX.shape
-print teY.shape
+
 
 clf = tree.DecisionTreeRegressor()
 clf = clf.fit(trX, trY)
