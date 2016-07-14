@@ -43,17 +43,17 @@ def _read_split(file,read=0,oneHot=0):
   df=df.rename(columns={df.columns[len(list(df))-1]:'Class'})
   df0=df[df['Class'] == 0]
   df1=df[df['Class'] == 1]
-  imb=float(len(df1))*100/float(len(df))
+  imb=float(len(df0))/float(len(df1))
   if(read):
-    print 'dataset has %d features %d rows' %(( len(list(df))-1 ), len(df))
-    print 'dataset is %f percent imabalanced' %(imb)
+    print 'FEATURES : %d ROWS: %d ' %(( len(list(df))-1 ), len(df))
+    print 'Imbalance Ratio: %f' %(imb)
 
   Xy=df.as_matrix().astype(np.float32)
   y=Xy[:,Xy.shape[1]-1]
   if(oneHot):
     y=_one_hot(y)
   X=np.delete(Xy,Xy.shape[1]-1,axis=1)
-  return train_test_split(X,y, test_size=0.3, random_state=42)
+  return train_test_split(X,y, test_size=0.33, random_state=42)
 
 
 

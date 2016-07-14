@@ -11,7 +11,9 @@ from sklearn.metrics import confusion_matrix
 from algorithms.smote import SMOTE
 from sklearn.svm import SVC
 
-trX, teX, trY, teY = _read_split("~/Google Drive/REU/classification-datasets/classification-datasets/boundary.csv",read=1,oneHot=0)
+trX, teX, trY, teY = _read_split(
+	"~/Google Drive/REU/classification-datasets/classification-datasets/boundary.csv",
+	read=1,oneHot=0)
 
 # #preprocessing 
 # scaler=MinMaxScaler(feature_range=(0, 1))
@@ -30,6 +32,7 @@ np.random.shuffle(Xy)
 trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
+"""
 TRC0,TRC1=_class_split(trX,trY)
 TEC0,TEC1=_class_split(teX,teY)
 
@@ -43,19 +46,18 @@ tec0=pca.fit_transform(TEC0)
 tec1=pca.fit_transform(TEC1)
 
 
-# plt.scatter(trc0[:,0],trc0[:,1],c='b',s=10,label="training_0")
+plt.scatter(trc0[:,0],trc0[:,1],c='b',s=10,label="training_0")
 plt.scatter(trc1[:,0],trc1[:,1],c='r',s=10,label="training_1")
-# plt.scatter(tec0[:,0],tec0[:,1],c='g',s=10,label="test_0")
-plt.scatter(tec1[:,0],tec1[:,1],c='grey',s=10,label="test_1")
+plt.scatter(tec1[:,0],tec1[:,1],c='r',s=10,label="test_1")
+plt.scatter(tec0[:,0],tec0[:,1],c='g',s=5,label="test_0")
 plt.legend()
 plt.show()
+"""
 
-'''
 print _f_count(teY),"test f count"
 
 
-# clf = tree.DecisionTreeRegressor()
-clf = SVC()
+clf = tree.DecisionTreeRegressor()
 clf = clf.fit(trX, trY)
 pred=clf.predict(teX)
 pred=pred.astype(np.int32)
@@ -67,4 +69,3 @@ process_cm(conf_mat, to_print=True)
 print precision_score(teY,pred),"Precision Score"
 print recall_score(teY,pred),"Recall Score"
 print roc_auc_score(teY,pred), "ROC_AUC"
-'''

@@ -32,7 +32,7 @@ np.random.shuffle(Xy)
 trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
-
+"""
 
 TRC0,TRC1=_class_split(trX,trY)
 TEC0,TEC1=_class_split(teX,teY)
@@ -48,17 +48,15 @@ tec1=pca.fit_transform(TEC1)
 
 
 plt.scatter(trc0[:,0],trc0[:,1],c='b',s=10,label="training_0")
-# plt.scatter(trc1[:,0],trc1[:,1],c='r',s=10,label="training_1")
+plt.scatter(trc1[:,0],trc1[:,1],c='r',s=10,label="training_1")
 plt.scatter(tec0[:,0],tec0[:,1],c='g',s=10,label="test_0")
-# plt.scatter(tec1[:,0],tec1[:,1],c='grey',s=10,label="test_1")
+plt.scatter(tec1[:,0],tec1[:,1],c='grey',s=10,label="test_1")
 plt.legend()
 
-
+"""
 
 
 print _f_count(teY),"test f count"
-
-
 clf = tree.DecisionTreeRegressor()
 clf = clf.fit(trX, trY)
 pred=clf.predict(teX)
@@ -73,4 +71,4 @@ print recall_score(teY,pred),"Recall Score"
 print roc_auc_score(teY,pred), "ROC_AUC"
 
 
-plt.show()
+# plt.show()
