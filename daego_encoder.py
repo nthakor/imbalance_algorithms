@@ -1,38 +1,55 @@
 import numpy as np
-import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from sklearn import tree
-import tensorflow as tf
-import math
-
-from sklearn.metrics import f1_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import roc_auc_score
-
 from algorithms.utils import _read_split,_class_split,_one_hot
 from algorithms.daego import DAEGO
-from algorithms.encoder import autoencoder,_encoder_transform
+from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
+from algorithms.encoder import _encoder_transform
 
-trX, teX, trY, teY = _read_split("dataset/segment.csv",read=1)
+trX, teX, trY, teY = _read_split("dataset/boundary.csv",read=1,oneHot=0)
 
-#preprocessing 
-scaler=MinMaxScaler(feature_range=(0, 1))
-trX_scaled=scaler.fit_transform(trX)
 
-X0,X1=_class_split(trX_scaled,trY)
-label_daf=[X0.shape[1],50,100]
 
-Z0_=_encoder_transform(X0,label_daf,150)
-Z1_=_encoder_transform(X1,label_daf,10)
+scaler=MinMaxScaler()
+trX=scaler.fit_transform(trX)
+print "Enter oversampling percent"
+P=int(input())
+X0,X1=_class_split(trX,trY)
 
-label_daego=[Z1_.shape[1],80,100]
-syn_Z=DAEGO(Z1_,label_daego,100,10)
+print "X0 shape",X0.shape
+print "X1 shape",X1.shape
+print "Enter layer for Encoder"
+layer=input()
+inp_shape=[trX.shape[1]]
+layer_enc=inp_shape+layer
+print "Enter batch Range for X0"
+x0_batch=input()
+print "Enter batch Range for X1"
+x1_batch=input()
+
+
+print layer_enc,"Encoder LAYER"
+
+Z0_=_encoder_transform(X0,layer_enc,x0_batch)
+Z1_=_encoder_transform(X1,layer_enc,x1_batch)
+
+print "\n\n\nafter DAF encoding sample Z1_ shape:",Z1_.shape
+
+print "Enter layer for DAEGO"
+layer_daego=input()
+inp_shape=[Z1_.shape[1]]
+layer_daego=inp_shape+layer
+print "Enter daego mini batch size"
+daego_min_batch=input()
+
+syn_Z=DAEGO(Z1_,layer_daego,P,daego_min_batch)
 
 Z1_1=np.vstack((Z1_,syn_Z))
 
-label_daf.reverse()
-X0_=_encoder_transform(Z0_,label_daf,150)
-X1_=_encoder_transform(Z1_1,label_daf,10)
+print Z1_1.shape,"after syn sample"
+
+layer_enc.reverse()
+X0_=_encoder_transform(Z0_,layer_enc,x0_batch)
+X1_=_encoder_transform(Z1_1,layer_enc,x1_batch)
 
 
 X1=np.column_stack((X1_,np.ones(X1_.shape[0])))
@@ -41,22 +58,22 @@ X0=np.column_stack((X0_,np.zeros(X0_.shape[0])))
 
 Xy=np.vstack((X0,X1))
 np.random.shuffle(Xy)
-y=Xy[:,Xy.shape[1]-1]
-trY=_one_hot(y)
+trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
 
-teX_scaled=scaler.fit_transform(teX)
-label_daf.reverse()
-label_daf_test=label_daf+label_daf[::-1]
-print label_daf_test,"test"
-print label_daf,"label"
-teX=_encoder_transform(teX_scaled,label_daf_test,10)
+teX=scaler.fit_transform(teX)
+print "\n\n\nWhether preprocess test data with daf (0/1)"
+test_preprocess=input()
+
+if (test_preprocess):
+	layer_enc.reverse()
+	layer_enc_test=layer_enc+layer_enc[::-1]
+	print "Enter teX batch, teX Shape:",teX.shape
+	teX_batch=input()
+	teX=_encoder_transform(teX,layer_enc_test,teX_batch)
 
 
-clf = tree.DecisionTreeRegressor()
-clf = clf.fit(trX, trY)
-pred=clf.predict(teX)
-print f1_score(teY,pred),"F1-score"
-print precision_score(teY,pred),"Precision Score"
-print roc_auc_score(teY,pred), "ROC_AUC"
+_clf_dtree(trX,teX,trY,teY)
+_clf_svm(trX,teX,trY,teY)
+_clf_mlp(trX,teX,trY,teY)

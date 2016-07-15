@@ -1,42 +1,61 @@
 import numpy as np
-import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from sklearn import tree
-import tensorflow as tf
-import math
-
-from sklearn.metrics import f1_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import roc_auc_score
-
 from algorithms.utils import _read_split,_class_split,_one_hot
 from algorithms.daego import DAEGO
 from algorithms.daf import DAF
-from algorithms.TFMLP import MLPR
-trX, teX, trY, teY = _read_split("dataset/segment.csv",read=1,oneHot=1)
+from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 
-#preprocessing 
-scaler=MinMaxScaler(feature_range=(0, 1))
-trX_scaled=scaler.fit_transform(trX)
 
-X0,X1=_class_split(trX_scaled,trY)
-label_daf=[X0.shape[1],15,10]
+trX, teX, trY, teY = _read_split("dataset/boundary.csv",read=1,oneHot=0)
 
-Z0_=DAF(X0,label_daf,150,"sigmoid")
-Z1_=DAF(X1,label_daf,10,"sigmoid")
+scaler=MinMaxScaler()
+trX=scaler.fit_transform(trX)
+print "Enter oversampling percent"
+P=int(input())
+X0,X1=_class_split(trX,trY)
 
-print Z1_.shape,"after syn sample"
+print "X0 shape",X0.shape
+print "X1 shape",X1.shape
+print "Enter layer for DAF"
+layer=input()
+inp_shape=[trX.shape[1]]
+layer_daf=inp_shape+layer
+print "Enter batch Range for X0"
+x0_batch=input()
+print "Enter batch Range for X1"
+x1_batch=input()
+print "Enter Activation (1:sigmoid or 2:tanh)"
+atcn=int(input())
 
-label_daego=[Z1_.shape[1],80,100]
-syn_Z=DAEGO(Z1_,label_daego,100,10)
+if atcn==1:
+	activation="sigmoid"
+elif atcn==2:
+	activation="tanh"
+else:
+	print "wrong activation"
+
+print layer_daf,"DAF LAYER"
+
+Z0_=DAF(X0,layer_daf,x0_batch,activation)
+Z1_=DAF(X1,layer_daf,x1_batch,activation)
+
+print "\n\n\nafter DAF encoding sample Z1_ shape:",Z1_.shape
+
+print "Enter layer for DAEGO"
+layer_daego=input()
+inp_shape=[Z1_.shape[1]]
+layer_daego=inp_shape+layer
+print "Enter daego mini batch size"
+daego_min_batch=input()
+syn_Z=DAEGO(Z1_,layer_daego,P,daego_min_batch)
 
 Z1_1=np.vstack((Z1_,syn_Z))
 
 print Z1_1.shape,"after syn sample"
 
-label_daf.reverse()
-X0_=DAF(Z0_,label_daf,150,"sigmoid")
-X1_=DAF(Z1_1,label_daf,10,"sigmoid")
+layer_daf.reverse()
+X0_=DAF(Z0_,layer_daf,x0_batch,activation)
+X1_=DAF(Z1_1,layer_daf,x1_batch,activation)
 
 
 X1=np.column_stack((X1_,np.ones(X1_.shape[0])))
@@ -45,33 +64,26 @@ X0=np.column_stack((X0_,np.zeros(X0_.shape[0])))
 
 Xy=np.vstack((X0,X1))
 np.random.shuffle(Xy)
-y=Xy[:,Xy.shape[1]-1]
-trY=_one_hot(y)
+trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
 
 teX_scaled=scaler.fit_transform(teX)
-label_daf.reverse()
-label_daf_test=label_daf+label_daf[::-1]
-print label_daf_test,"test"
-print label_daf,"label"
-teX=DAF(teX_scaled,label_daf_test,10,"sigmoid")
+
+print "\n\n\nWhether preprocess test data with daf (0/1)"
+test_preprocess=input()
+
+if (test_preprocess):
+	layer_daf.reverse()
+	layer_daf_test=layer_daf+layer_daf[::-1]
+	print "Enter teX batch, teX Shape:",teX.shape
+	teX_batch=input()
+	teX=DAF(teX,layer_daf_test,teX_batch,activation)
 
 
-layers=[trX.shape[1],50,trY.shape[1]]
-print layers
-mlpr=MLPR(layers,maxItr = 1000, tol = 0.40, reg = 0.001, verbose = True)
 
-mlpr.fit(trX, trY)
-pred = mlpr.predict(teX)
+_clf_dtree(trX,teX,trY,teY)
+_clf_svm(trX,teX,trY,teY)
+_clf_mlp(trX,teX,trY,teY)
 
-print pred.shape,"pred"
-print pred
-print teY
-print teY.shape,"teY"
-# clf = tree.DecisionTreeRegressor()
-# clf = clf.fit(trX, trY)
-# pred=clf.predict(teX)
-# print f1_score(teY,pred),"F1-score"
-print precision_score(teY,pred),"Precision Score"
-print roc_auc_score(teY,pred), "ROC_AUC"
+

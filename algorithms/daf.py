@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import math
+from sys import stderr
 
 def DAF(trX,layers,batch_range,activation):
 
@@ -59,6 +60,8 @@ def DAF(trX,layers,batch_range,activation):
                                       range(batch_range, len(cur_input), batch_range)):
                     input_ = cur_input[start:end]
                     sess.run(train_op,feed_dict={x:input_})
-                # print (epoch_i,sess.run(cost,feed_dict={x:cur_input}))
+                s= "\repoch: %d cost: %f"%(epoch_i,sess.run(cost,feed_dict={x:cur_input}))
+                stderr.write(s)
+                stderr.flush()
             cur_input=sess.run(z,feed_dict={x:cur_input})
     return cur_input

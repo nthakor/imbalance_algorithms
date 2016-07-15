@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split
+from sklearn.decomposition import PCA
+
 
 def corrupt(x):
     """Take an input tensor and add uniform masking.
@@ -95,4 +97,19 @@ def process_cm(confusion_mat, i=1, to_print=True):
         print('FN: {}'.format(FN))
         print('TN: {}'.format(TN))
     return TP, FP, FN, TN
+
+def _plot_set(trX,teX,trY,teY):
+  TRC0,TRC1=_class_split(trX,trY)
+  TEC0,TEC1=_class_split(teX,teY)
+  pca = PCA(n_components=2)
+  trc0=pca.fit_transform(TRC0)
+  trc1=pca.fit_transform(TRC1)
+  tec0=pca.fit_transform(TEC0)
+  tec1=pca.fit_transform(TEC1)
+  plt.scatter(trc0[:,0],trc0[:,1],c='b',s=10,label="training_0")
+  plt.scatter(trc1[:,0],trc1[:,1],c='r',s=10,label="training_1")
+  plt.scatter(tec1[:,0],tec1[:,1],c='r',s=10,label="test_1")
+  plt.scatter(tec0[:,0],tec0[:,1],c='g',s=5,label="test_0")
+  plt.legend()
+  plt.show()
 

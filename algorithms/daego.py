@@ -4,7 +4,7 @@ import numpy.linalg as LA
 from sklearn.preprocessing import StandardScaler as StdScaler
 from sklearn.preprocessing import normalize as norm
 import tensorflow as tf
-
+from sys import stderr
 
 def DAEGO(X_s,H,P,batch_range):
 	"""
@@ -53,7 +53,10 @@ def DAEGO(X_s,H,P,batch_range):
 	    for start, end in zip(range(0, len(x_norm), batch_range),range(batch_range, len(x_norm), batch_range)):
 	        input_ = x_norm[start:end]
 	        sess.run(optimizer, feed_dict={ae['x']: input_, ae['corrupt_prob']: [1.0]})
-	    # print(epoch_i, sess.run(ae['cost'], feed_dict={ae['x']: X_s, ae['corrupt_prob']: [1.0]}))
+	    s="\r Epoch: %d Cost: %f"%(epoch_i, sess.run(ae['cost'], 
+	    	feed_dict={ae['x']: X_s, ae['corrupt_prob']: [1.0]}))
+	    stderr.write(s)
+	    stderr.flush()
 	x_init_encoded = sess.run(ae['y'], feed_dict={ae['x']: x_ini_norm, ae['corrupt_prob']: [0.0]})
 	sess.close()
 	x_init_norminv=np.multiply(x_init_encoded,norm_param)
