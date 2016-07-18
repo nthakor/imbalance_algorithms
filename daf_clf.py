@@ -2,9 +2,9 @@ import numpy as np
 from algorithms.utils import _read_split,_class_split
 from algorithms.daf import DAF
 from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
-form sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 
-trX, teX, trY, teY = _read_split("dataset/boundary.csv",read=1)
+trX, teX, trY, teY = _read_split("../datasets/nd-data/boundary.csv",read=1)
 
 
 def _daf_module(X,Y,layer,batch_range):
@@ -40,6 +40,6 @@ trX,trY=_daf_module(trX,trY,layer,train_batch)
 teX,teY=_daf_module(teX,teY,layer,test_batch)
 
 _clf_dtree(trX,teX,trY,teY)
-_clf_svm(trX,teX,trY,teY)
+# _clf_svm(trX,teX,trY,teY)
 _clf_mlp(trX,teX,trY,teY)
 

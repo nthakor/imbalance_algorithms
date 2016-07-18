@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split
 from sklearn.decomposition import PCA
-
+import matplotlib.pyplot as plt
 
 def corrupt(x):
     """Take an input tensor and add uniform masking.
@@ -98,7 +98,8 @@ def process_cm(confusion_mat, i=1, to_print=True):
         print('TN: {}'.format(TN))
     return TP, FP, FN, TN
 
-def _plot_set(trX,teX,trY,teY):
+def _plot_set(file,oneHot=0):
+  trX,teX,trY,teY=_read_split(file,)
   TRC0,TRC1=_class_split(trX,trY)
   TEC0,TEC1=_class_split(teX,teY)
   pca = PCA(n_components=2)
@@ -112,4 +113,27 @@ def _plot_set(trX,teX,trY,teY):
   plt.scatter(tec0[:,0],tec0[:,1],c='g',s=5,label="test_0")
   plt.legend()
   plt.show()
+
+def factors(n):    
+    return set(reduce(list.__add__, 
+                ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
+
+
+
+def _read_dat(file,skip=13,read=1,oneHot=0):
+  df=pd.read_csv(file,skiprows=skip,header=None)
+  df=df.rename(columns={df.columns[len(list(df))-1]:'Class'})
+  df0=df[df['Class'] == 'negative']
+  df1=df[df['Class'] == 'positive']
+  imb=float(len(df0))/float(len(df1))
+  if(read):
+    print 'FEATURES : %d ROWS: %d ' %(( len(list(df))-1 ), len(df))
+    print 'Imbalance Ratio: %f' %(imb)
+
+  Xy=df.as_matrix().astype(np.float32)
+  y=Xy[:,Xy.shape[1]-1]
+  if(oneHot):
+    y=_one_hot(y)
+  X=np.delete(Xy,Xy.shape[1]-1,axis=1)
+  return train_test_split(X,y, test_size=0.33, random_state=42)
 

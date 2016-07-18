@@ -5,7 +5,7 @@ from algorithms.daego import DAEGO
 from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 
 trX, teX, trY, teY = _read_split(
-	"dataset/boundary.csv",
+	"../datasets/nd-data/boundary.csv",
 	read=1,oneHot=0)
 X0,X1=_class_split(trX,trY,oneHot=0)
 
@@ -31,5 +31,5 @@ trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
 _clf_dtree(trX,teX,trY,teY)
-_clf_svm(trX,teX,trY,teY)
+# _clf_svm(trX,teX,trY,teY)
 _clf_mlp(trX,teX,trY,teY)

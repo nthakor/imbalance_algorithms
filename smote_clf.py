@@ -5,7 +5,7 @@ from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 from algorithms.smote import SMOTE
 
 trX, teX, trY, teY = _read_split(
-	"../datasets/nd-data/boundary.csv",
+	"../datasets/nd-data/segment.csv",
 	read=1,oneHot=0)
 
 
@@ -23,8 +23,9 @@ np.random.shuffle(Xy)
 trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
+
 _clf_dtree(trX,teX,trY,teY)
-_clf_svm(trX,teX,trY,teY)
+# _clf_svm(trX,teX,trY,teY)
 _clf_mlp(trX,teX,trY,teY)
 
 

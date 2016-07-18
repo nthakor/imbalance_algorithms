@@ -5,7 +5,7 @@ from algorithms.daego import DAEGO
 from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 from algorithms.encoder import _encoder_transform
 
-trX, teX, trY, teY = _read_split("dataset/boundary.csv",read=1,oneHot=0)
+trX, teX, trY, teY = _read_split("../datasets/nd-data/boundary.csv",read=1,oneHot=0)
 
 
 
@@ -75,5 +75,5 @@ if (test_preprocess):
 
 
 _clf_dtree(trX,teX,trY,teY)
-_clf_svm(trX,teX,trY,teY)
+# _clf_svm(trX,teX,trY,teY)
 _clf_mlp(trX,teX,trY,teY)
