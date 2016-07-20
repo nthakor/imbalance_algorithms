@@ -63,3 +63,4 @@ def DAEGO(X_s,H,P,batch_range):
 	syn_Z=scaler.inverse_transform(x_init_norminv)
 	return syn_Z
 
+

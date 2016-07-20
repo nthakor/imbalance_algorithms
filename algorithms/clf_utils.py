@@ -26,17 +26,17 @@ def _clf_svm(trX,teX,trY,teY):
 	print "SVM"
 	print _f_count(teY),"test f count"
 	clf = SVC(random_state=0, probability=True)
-clf = clf.fit(trX, trY)
-pred=clf.predict(teX)
-pred=pred.astype(np.int32)
-teY=teY.astype(np.int32)
-print _f_count(pred),"pred f count"
-conf_mat=confusion_matrix(teY, pred)
+	clf = clf.fit(trX, trY)
+	pred=clf.predict(teX)
+	pred=pred.astype(np.int32)
+	teY=teY.astype(np.int32)
+	print _f_count(pred),"pred f count"
+	conf_mat=confusion_matrix(teY, pred)
 
-process_cm(conf_mat, to_print=True)
-print precision_score(teY,pred),"Precision Score"
-print recall_score(teY,pred),"Recall Score"
-print roc_auc_score(teY,pred), "ROC_AUC"
+	process_cm(conf_mat, to_print=True)
+	print precision_score(teY,pred),"Precision Score"
+	print recall_score(teY,pred),"Recall Score"
+	print roc_auc_score(teY,pred), "ROC_AUC"
 
 def _clf_mlp(trX,teX,trY,teY):
 	print "MLP"

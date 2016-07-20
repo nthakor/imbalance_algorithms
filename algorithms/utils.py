@@ -50,7 +50,9 @@ def _read_split(file,read=0,oneHot=0):
     print 'FEATURES : %d ROWS: %d ' %(( len(list(df))-1 ), len(df))
     print 'Imbalance Ratio: %f' %(imb)
 
-  Xy=df.as_matrix().astype(np.float32)
+  Xy0=df0.as_matrix().astype(np.float32)
+  Xy1=df1.as_matrix().astype(np.float32)
+  Xy=np.vstack((Xy0,Xy1))
   y=Xy[:,Xy.shape[1]-1]
   if(oneHot):
     y=_one_hot(y)
