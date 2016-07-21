@@ -9,6 +9,6 @@ Required Libraries
 * libsdae https://github.com/rajarsheem/libsdae
 
 Datasets:
-  * KEEL  http://www.keel.es/datasets.php (Imblanced Datasets) [use reading function algorithms.utils._read_dat]
+  * KEEL  http://www.keel.es/datasets.php (Imblanced Datasets) [use reading function ``` algorithms.utils._read_dat ```]
   * 
 
