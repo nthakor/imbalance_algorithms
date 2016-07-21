@@ -23,14 +23,14 @@ def DAF(trX,layers,batch_range,activation):
     Returns
     -------
 
-    input dataset in required dimension
+    dataset into transformed dimension using stacked denoising encoder.
     """
     cur_input=trX
     learning_rate=0.001
     n_layer=len(layers)
     
     for i in range(1,n_layer):
-        print i
+        print "layer",i
         node=layers[i-1]
         x = tf.placeholder(tf.float32, [None, layers[i-1]], name='x')
         w_e = tf.Variable(

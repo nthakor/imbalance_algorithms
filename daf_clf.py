@@ -4,7 +4,16 @@ from algorithms.daf import DAF
 from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 from sklearn.preprocessing import MinMaxScaler
 
-trX, teX, trY, teY = _read_split("../datasets/nd-data/boundary.csv",read=1)
+# trX, teX, trY, teY = _read_split("../datasets/nd-data/boundary.csv",read=1)
+
+#implementation of dual encoded features algorithm
+#link to paper: http://www.sciencedirect.com/science/article/pii/S0031320316301303
+
+
+from algorithms.utils import _read_dat
+trX, teX, trY, teY = _read_dat(
+	"dataset/page-blocks0.dat",skip=15,
+	read=1,oneHot=0)
 
 
 def _daf_module(X,Y,layer,batch_range):

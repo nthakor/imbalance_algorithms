@@ -24,17 +24,6 @@ def corrupt(x):
                                                dtype=tf.int32), tf.float32))
 
 def _one_hot(label):
-  """Convert label to One Hot encoding
-
-  Parameters
-  ----------
-
-  label: Numpy 1-D array including numberic class labels
-
-  Returns
-  -------
-  Numpy array of dimesions [n_samples,n_classes]
-  """
   return pd.get_dummies(label)
 
 def _read_split(file,read=0,oneHot=0):
@@ -45,14 +34,12 @@ def _read_split(file,read=0,oneHot=0):
 
   file: name of the csv file
 
-  read: binary (To print dataset information)
-
-  oneHot: binary (To return class labels as oneHot vectors)
+  n: number of rows to skip
 
   Returns
   -------
 
-  train data, test data, train label, test label
+  trX, teX, trY, teY
   """
   df=pd.read_csv(file,skiprows=[1])
   df=df.rename(columns={df.columns[len(list(df))-1]:'Class'})
@@ -76,29 +63,11 @@ def _read_split(file,read=0,oneHot=0):
 
 
 def _reverse_one_hot(y):
-  """Convert One Hot vectors to class labels
-  Parameters
-  ----------
-  y: Numpy array with dimensions [n_samples,n_classes]
-
-  Returns
-  -------
-
-  Class label
-  """
   n_class=y.shape[1]
   label=np.arange(n_class)
   return np.dot(y,label)
 
 def _class_split(trX,trY,oneHot=0):
-  """Split the Class into Positive and Negative Class Samples
-  Parameters
-  ----------
-
-  trX: Input Data, Numpy array (shape=[n_samples,n_features])
-  trY: Class Label , Numpy Array
-  OneHot: Binary (if class labels is in one hot encoding)
-  """
   if(oneHot):
     Y=_reverse_one_hot(trY)
   else:
@@ -111,9 +80,6 @@ def _class_split(trX,trY,oneHot=0):
   return class_0,class_1
 
 def _f_count(Y):
-  '''Frequency Count of labels
-  Y: Class Label. Numpy array
-  '''
   if (len(Y.shape))==2:
     Y=_reverse_one_hot(Y)
   c = np.bincount(Y.astype(np.int32))
@@ -121,12 +87,8 @@ def _f_count(Y):
   return zip(ii,c[ii])
 
 def process_cm(confusion_mat, i=1, to_print=True):
-    """Print TP,FP,TN,FN with confusion matrix as input 
-    Parameters
-    ----------
-
-    confustion_mat: Numpy Array
-    """
+    # i means which class to choose to do one-vs-the-rest calculation
+    # rows are actual obs whereas columns are predictions
     TP = confusion_mat[i,i]  # correctly labeled as i
     FP = confusion_mat[:,i].sum() - TP  # incorrectly labeled as i
     FN = confusion_mat[i,:].sum() - TP  # incorrectly labeled as non-i
@@ -138,33 +100,33 @@ def process_cm(confusion_mat, i=1, to_print=True):
         print('TN: {}'.format(TN))
     return TP, FP, FN, TN
 
-def factors(n):   
+def _plot_set(file,oneHot=0):
+  trX,teX,trY,teY=_read_split(file,)
+  TRC0,TRC1=_class_split(trX,trY)
+  TEC0,TEC1=_class_split(teX,teY)
+  pca = PCA(n_components=2)
+  trc0=pca.fit_transform(TRC0)
+  trc1=pca.fit_transform(TRC1)
+  tec0=pca.fit_transform(TEC0)
+  tec1=pca.fit_transform(TEC1)
+  plt.scatter(trc0[:,0],trc0[:,1],c='b',s=10,label="training_0")
+  plt.scatter(trc1[:,0],trc1[:,1],c='r',s=10,label="training_1")
+  plt.scatter(tec1[:,0],tec1[:,1],c='r',s=10,label="test_1")
+  plt.scatter(tec0[:,0],tec0[:,1],c='g',s=5,label="test_0")
+  plt.legend()
+  plt.show()
+
+def factors(n):    
     return set(reduce(list.__add__, 
                 ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
 
 
 
 def _read_dat(file,skip=13,read=1,oneHot=0):
-  """Read .dat format from keel dataset
-  Parameters
-  ----------
-  file : path to input file
-  skip: rows to skip 
-  read: binary (To print dataset information)
-
-  oneHot: binary (To return class labels as oneHot vectors)
-
-  Returns
-  -------
-
-  train data, test data, train label, test label
-  """
   df=pd.read_csv(file,skiprows=skip,header=None)
   df=df.rename(columns={df.columns[len(list(df))-1]:'Class'})
-  mapping = {'positive': 1, 'negative': 0}
-  df=df.replace({'Class': mapping},regex=True)
-  df0=df[df['Class'] == 0]
-  df1=df[df['Class'] == 1]
+  df0=df[df['Class'] == 'negative']
+  df1=df[df['Class'] == 'positive']
   imb=float(len(df0))/float(len(df1))
   if(read):
     print 'FEATURES : %d ROWS: %d ' %(( len(list(df))-1 ), len(df))

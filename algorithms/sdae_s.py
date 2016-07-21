@@ -1,27 +1,33 @@
 import numpy as np
 import numpy.linalg as LA
-from sklearn.preprocessing import StandardScaler as StdScaler
-from sklearn.preprocessing import normalize as norm
-from algorithms.deepautoencoder.stacked_autoencoder import StackedAutoEncoder
+from deepautoencoder import StackedAutoEncoder
+from sklearn.preprocessing import MinMaxScaler
 
-def sdae_syn(X_s,h_layer,activation,batch_size,P,noise='gaussian',loss='rmse',lr=0.001):
-	scaler=StdScaler()
-	x_tr=scaler.fit_transform(X_s.astype(float))
-	x_norm=norm(x_tr,axis=0)
+def sdae_syn(X_s,P,h_layer,activations,noise,epoch,loss,batch_size):
+	"""Generate synthetic samples using stacked De-noising Encoders
+	Parameters
+	----------
+	X_s: positive class sample (Numpy Array) (Input Must be in within range of 0 to 1)
+	P: Over Sampling Percentage
+	h_layer: hidden layer (list)
+	activation: activation functions list (same length as hidden layer)
+	noise : [None,Gaussian,mask]
+	epoch: epoch for each layer (list with same size as hidden layer)
+	loss: 'rmse' or 'cross-entropy'
+	batch_size = mini_batch size
 
+	For more detaisl on input parameters https://github.com/rajarsheem/libsdae 
+	"""
 	n_samples=int(X_s.shape[0]*P/100)
 	print "generating %d samples" %(n_samples)
-
-	norm_param=[LA.norm(x) for x in x_tr.T]
 	X_init=np.random.standard_normal(size=(n_samples,X_s.shape[1]))
-	x_init_tr=scaler.transform(X_init)
-	x_ini_norm=norm(x_init_tr)
-	SDAE=SDAE=StackedAutoEncoder(dims=h_layer,
-		activations=activation,noise=noise,epoch=[100 for i in range(len(h_layer))],batch_size=batch_size,lr=lr)
-	SDAE.fit(x_norm)
-	x_init_encoded=SDAE.transform(x_ini_norm)
-	x_init_norminv=np.multiply(x_init_encoded,norm_param)
-	syn_Z=scaler.inverse_transform(x_init_norminv)
+	scaler=MinMaxScaler()
+	X_init=scaler.fit_transform(X_init)
+	model = StackedAutoEncoder(dims=h_layer, activations=activations, noise=noise, 
+		epoch=epoch,loss=loss, 
+		batch_size=batch_size, lr=0.007, print_step=2000)
+	model.fit(X_s)
+	syn_Z=model.transform(X_init)
 	return syn_Z
 
 

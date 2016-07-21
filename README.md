@@ -1,2 +1,7 @@
 # imbalance_algorithms
-Algorithms to handle imabalanced datasets using deep learning 
+**Experiments in deep learning for class imbalance**
+
+
+Required Libraries
+
+

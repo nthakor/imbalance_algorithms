@@ -7,7 +7,12 @@ from algorithms.encoder import _encoder_transform
 
 trX, teX, trY, teY = _read_split("../datasets/nd-data/boundary.csv",read=1,oneHot=0)
 
+#improvement of daego method using denoising encoders
 
+#Flowchart
+#1. Transform to higher dimension using encoders
+#2. Generate Synthetic Samples using DAEGO
+#3. Transform back to original dimension
 
 scaler=MinMaxScaler()
 trX=scaler.fit_transform(trX)

@@ -38,11 +38,6 @@ def DAEGO(X_s,H,P,batch_range):
 	X_init=np.random.standard_normal(size=(n_samples,X_s.shape[1]))
 	x_init_tr=scaler.transform(X_init)
 	x_ini_norm=norm(x_init_tr)
-
-
-
-
-
 	ae=autoencoder(dimensions=H)
 	learning_rate = 0.001
 	optimizer = tf.train.AdamOptimizer(learning_rate).minimize(ae['cost'])

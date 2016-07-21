@@ -6,7 +6,15 @@ from algorithms.daf import DAF
 from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 
 
-trX, teX, trY, teY = _read_split("../datasets/nd-data/boundary.csv",read=1,oneHot=0)
+#improvement of daego method using stacked encoders
+
+#Flowchart
+#1. Transform to higher dimension using DAF
+#2. Generate Synthetic Samples using DAEGO
+#3. Transform back to original dimension
+
+
+trX, teX, trY, teY = _read_split("../datasets/nd-data/coil2000.csv",read=1,oneHot=0)
 
 scaler=MinMaxScaler()
 trX=scaler.fit_transform(trX)
@@ -70,7 +78,7 @@ trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
 teX_scaled=scaler.fit_transform(teX)
 
-print "\n\n\nWhether preprocess test data with daf (0/1)"
+print "\n\n\nWhether transform test data with daf (0/1)"
 test_preprocess=input()
 
 if (test_preprocess):

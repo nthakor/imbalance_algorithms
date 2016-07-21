@@ -4,9 +4,18 @@ from algorithms.utils import _read_split,_class_split,_one_hot
 from algorithms.daego import DAEGO
 from algorithms.clf_utils import _clf_dtree,_clf_svm,_clf_mlp
 
-trX, teX, trY, teY = _read_split(
-	"../datasets/nd-data/boundary.csv",
+# trX, teX, trY, teY = _read_split(
+# 	"../datasets/nd-data/boundary.csv",
+# 	read=1,oneHot=0)
+
+#Test the classifier performance using synthetic samples generated via daego 
+#link to paper: http://www.site.uottawa.ca/~nat/Papers/DEAGO-PID3925613.pdf
+from algorithms.utils import _read_dat
+trX, teX, trY, teY = _read_dat(
+	"dataset/page-blocks0.dat",skip=15,
 	read=1,oneHot=0)
+
+	
 X0,X1=_class_split(trX,trY,oneHot=0)
 
 
@@ -31,5 +40,5 @@ trY=Xy[:,Xy.shape[1]-1]
 trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
 _clf_dtree(trX,teX,trY,teY)
-# _clf_svm(trX,teX,trY,teY)
+_clf_svm(trX,teX,trY,teY)
 _clf_mlp(trX,teX,trY,teY)
