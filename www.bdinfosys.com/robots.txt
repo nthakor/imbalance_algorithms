@@ -1,0 +1,2 @@
+
+sitemap: http://cdn.attracta.com/sitemap/381275.xml.gz
