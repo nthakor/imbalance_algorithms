@@ -15,15 +15,15 @@ def plot_data(X,y):
 	plt.legend()
 	plt.show()
 
-def plot_syn(X1,S1):
+def plot_syn(X1,S1,labl):
 	"""To analyze synthetic samples generated
 	"""
 	pca=PCA(n_components=2)
 	x0=pca.fit_transform(X1)
 	x1=pca.fit_transform(S1)
-	plt.title("synthetiC data distribution")
+	plt.title("synthetic data distribution")
 	plt.scatter(x0[:,0],x0[:,1],marker='o', c="#00ffff",label="raw Data")
-	plt.scatter(x1[:,0],x1[:,1],marker='o', c="r",label="synthetic samples")
+	plt.scatter(x1[:,0],x1[:,1],marker='o', c="r",label=labl)
 	plt.legend()
 	plt.show()
 

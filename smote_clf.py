@@ -14,7 +14,7 @@ trX, teX, trY, teY = _read_dat(
 	read=1,oneHot=0)
 
 # trX, teX, trY, teY = _read_split(
-# 	"../datasets/nd-data/segment.csv",
+# 	"../datasets/nd-data/boundary.csv",
 # 	read=1,oneHot=0)
 
 
@@ -35,7 +35,7 @@ trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
 
 
 _clf_dtree(trX,teX,trY,teY)
-_clf_svm(trX,teX,trY,teY)
+# _clf_svm(trX,teX,trY,teY)
 _clf_mlp(trX,teX,trY,teY)
 
 
