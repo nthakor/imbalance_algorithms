@@ -177,3 +177,29 @@ def _read_dat(file,skip=13,read=1,oneHot=0):
   X=np.delete(Xy,Xy.shape[1]-1,axis=1)
   return train_test_split(X,y, test_size=0.33, random_state=42)
 
+
+def _merge_syn(X0,X1,syn_X):
+  """Merge synthetic data with training set and 
+  returns the final training examples and labels.
+
+  Parameters:
+  -----------
+  X0: -ve class from training data
+  X1: +ve class from training data
+  syn_X: synthetic smaple generated
+
+  Returns:
+  -------
+  trX: training samples
+  trY: training labels
+  """
+  X1=np.vstack((X1,syn_X))
+  X1=np.column_stack((X1,np.ones(X1.shape[0])))
+  X0=np.column_stack((X0,np.zeros(X0.shape[0])))
+  Xy=np.vstack((X0,X1))
+  np.random.shuffle(Xy)
+  trY=Xy[:,Xy.shape[1]-1]
+  trX=np.delete(Xy,Xy.shape[1]-1,axis=1)
+  trY=trY.astype(int)
+  return trX,trY
+
